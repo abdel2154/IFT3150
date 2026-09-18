@@ -10,7 +10,7 @@ title: Vue d'ensemble du projet
     }
 </style>
 
-# Vue d'ensemble du projet
+# Vue d'ensemble dffu projet
 
 !!! info "Informations générales"
     **Session**: Été 2026  
