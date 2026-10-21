@@ -15,7 +15,7 @@ title: Vue d'ensemble du projet
 !!! info "Informations générales"
     **Session**: Automne 2026  
     **Auteur(s)**: Abdel Messaad (20287581)  
-    **Thème(s)**: Intelligence artificielle appliquée : veille informationnelle et base documentaire assistées par IA (plateforme interne de services)  
+    **Thème(s)**: Intelligence artificielle appliquée : veille informationnelle et résumé assistés par IA (plateforme interne de services)  
     **Superviseur(s)**: <!-- PLACEHOLDER : nom du superviseur (affiliation) à compléter -->  
     **Collaborateur(s):** Ministère de l'Emploi et de la Solidarité sociale (MESS), Gouvernement du Québec  
 
@@ -23,131 +23,119 @@ title: Vue d'ensemble du projet
 
 ### Contexte
 
-Le projet s'inscrit dans un mandat réel au sein du Ministère de l'Emploi et de la Solidarité sociale (MESS) du Québec, un ministère dont les activités touchent notamment l'emploi, le marché du travail et la solidarité sociale.
+Ce projet est relié à un mandat que je réalise au Ministère de l'Emploi et de la Solidarité sociale (MESS) du Québec, un ministère qui touche à l'emploi, au marché du travail et à la solidarité sociale.
 
-Dans ce type d'organisation, les équipes doivent composer avec un volume croissant d'information et de documents : actualités, publications d'organismes, rapports, études, documents administratifs. Une partie du travail de veille, de lecture et d'analyse documentaire demeure largement manuelle et chronophage.
+Dans ce genre d'organisation, les analystes et les gestionnaires doivent suivre énormément d'information : actualités, rapports, études, publications. Faire cette veille à la main prend beaucoup de temps.
 
-L'intelligence artificielle (recherche sémantique, *embeddings*, modèles de langue) ouvre des pistes pour assister ces tâches. Mais dans un contexte gouvernemental, ces pistes doivent impérativement tenir compte de la confidentialité, de la gouvernance des données et de la sécurité (voir la section [Contraintes et confidentialité](#contraintes-et-confidentialite)).
+L'IA (recherche sémantique, *embeddings*, modèles de langue) peut aider à alléger ce travail. Mais comme on est dans un ministère, il faut rester prudent avec la confidentialité et la sécurité des données (voir la section [Contraintes et confidentialité](#contraintes-et-confidentialite)).
 
 ### Problématique
 
-Les personnes qui font de la veille et de l'analyse documentaire au ministère font face à une surcharge informationnelle :
+Le problème principal, c'est la surcharge d'information :
 
-- une grande quantité d'articles, de sources et de documents à suivre ou à traiter ;
-- un effort important pour distinguer ce qui est réellement pertinent pour un besoin donné ;
-- un traitement manuel (lecture, tri, recoupement) qui ne passe pas à l'échelle ;
-- des connaissances utiles dispersées dans de nombreux documents difficiles à exploiter ensemble.
+- il y a beaucoup trop d'articles et de sources à suivre ;
+- c'est difficile de repérer vite ce qui est vraiment pertinent ;
+- tout lire et tout trier à la main, ça ne tient pas à grande échelle.
 
-Les approches actuelles (tri manuel, recherche par mots-clés) montrent leurs limites : elles sont lentes et peinent à saisir la pertinence sémantique d'un contenu par rapport à un besoin.
+La recherche par mots-clés ne suffit pas : elle est lente et elle ne comprend pas vraiment le sens des textes.
 
 ### Proposition et objectifs
 
-La piste explorée est une plateforme interne regroupant plusieurs services d'IA, accessible depuis une page d'accueil unique, pensée pour des utilisateurs non techniques.
+L'idée, c'est une plateforme interne qui regroupe plusieurs services d'IA, avec une page d'accueil où on choisit le service voulu. Elle est pensée pour des gens qui ne sont pas des experts techniques.
 
-Deux services forment le cœur du projet pour cette session :
+J'ai déjà prototypé un premier service, VeilleIA, qui fait deux choses :
 
-1. Veille assistée par IA : collecter automatiquement des articles et retourner uniquement les plus pertinents grâce à un pipeline combinant *embeddings*, *reranking* et un modèle de langue comme juge.
-2. Base documentaire : un corpus que l'utilisateur enrichit lui-même (articles jugés pertinents et ses propres PDF), sur lequel les modèles de langue s'appuient lors de leurs analyses (approche *RAG*, voir plus bas).
+1. La veille : il récupère des articles et garde seulement les plus pertinents, grâce à des *embeddings* calculés en local.
+2. Le résumé et l'analyse : il produit un résumé des articles retenus et une analyse plus détaillée à l'aide d'un modèle de langue.
 
-!!! note "Extensions envisagées (hors cœur de session)"
-    - Résumé et synthèse de documents sélectionnés (points clés, chiffres, recommandations).
-    - Classification documentaire automatique selon un plan de classification.
-
-    Ces services sont envisagés comme évolutions futures de la plateforme et ne constituent pas le livrable principal de la session.
-
-Objectifs préliminaires (à raffiner avec le superviseur) :
-
-- [ ] Cadrer le besoin de veille et le périmètre des sources
-- [ ] Concevoir l'interface de la plateforme (page d'accueil et service de veille)
-- [ ] Prototyper le pipeline de pertinence de la veille (preuve de concept)
-- [ ] Prototyper la base documentaire (ingestion de PDF et d'articles, puis recherche)
-- [ ] Définir une démarche d'évaluation de la pertinence
+!!! note "Prochaine étape et idées pour plus tard"
+    - **Base documentaire** : laisser l'utilisateur garder ses articles et déposer ses propres PDF, pour que l'IA s'appuie dessus dans ses analyses (approche *RAG*). Pas encore fait.
+    - **Modèle de langue en local avec Ollama** : faire tourner le résumé en local pour ne plus dépendre d'un service externe (j'ai déjà commencé un petit prototype de résumé local à partir du travail d'un collègue).
+    - **Classification de documents** : ranger automatiquement des documents selon un plan de classification.
 
 ## Récits d'utilisation
 
-> Exemples illustrant *qui* veut faire *quoi*, avec *quelles données*. Ils servent à préciser le besoin ; certains restent à valider.
+> Quelques exemples de qui utilise l'outil et pour quoi faire.
 
-!!! abstract "Récit 1 : Veille avec tri par IA"
-    En tant que conseiller en veille, je veux que le système récupère automatiquement les articles de mes sources et me retourne uniquement les plus pertinents pour ma thématique, afin de ne pas lire des centaines d'articles.
-    Données : articles publics (presse, flux RSS) collectés via Inoreader.
+!!! abstract "Récit 1 : trier les articles par pertinence"
+    En tant que conseiller en veille, je veux que le système aille chercher les articles de mes sources (presse et flux RSS, via Inoreader) et me sorte seulement les plus pertinents pour ma thématique, pour ne pas avoir à en lire des centaines.
 
-!!! abstract "Récit 2 : Base documentaire personnelle"
-    En tant qu'analyste, je veux sauvegarder les articles pertinents trouvés par la veille et téléverser mes propres PDF dans une base documentaire, afin que les modèles de langue s'appuient sur ce corpus lors de leurs analyses (questions, recoupements).
-    Données : articles retenus et documents PDF fournis par l'utilisateur.
+!!! abstract "Récit 2 : résumer et analyser"
+    En tant qu'analyste, une fois les articles pertinents trouvés, je veux un résumé de l'ensemble et, en cliquant sur un article, une analyse plus détaillée (points clés, lien avec le contexte du MESS), pour aller à l'essentiel rapidement.
 
-!!! abstract "Récit 3 : Accès par une plateforme unique"
-    En tant qu'utilisateur interne non technique, je veux une page d'accueil où choisir le service et naviguer simplement, afin d'utiliser l'IA sans en comprendre les rouages.
-    Données : sans objet (interface).
+!!! abstract "Récit 3 : tout au même endroit"
+    En tant qu'utilisateur qui n'est pas technique, je veux une page d'accueil simple où je choisis le service et je navigue facilement, pour utiliser l'IA sans avoir à comprendre ce qu'il y a derrière.
 
-!!! abstract "Récits envisagés (extensions)"
-    - En tant qu'analyste en politiques, je veux un résumé structuré d'un long rapport (points clés, chiffres, recommandations), afin de préparer une note de breffage plus vite. *(Extension : résumé.)*
-    - En tant que technicien en gestion documentaire, je veux que le système propose la catégorie d'un document selon le plan de classification, afin de réduire le classement manuel. *(Extension : classification. Démonstration envisagée sur données synthétiques.)*
+!!! abstract "Récits pour plus tard (extensions)"
+    - En tant qu'analyste, je veux déposer mes propres PDF dans une base documentaire pour que l'IA s'en serve dans ses analyses. *(Extension : base documentaire / RAG.)*
+    
 
-## Comment fonctionne la veille (pipeline de pertinence)
+## Comment marche la veille
 
-L'idée est de combiner des méthodes rapides mais grossières et des méthodes plus coûteuses mais précises, du filtrage large vers le classement fin :
+!!! info "Description Inoreader"
+    Inoreader est un service en ligne qui rassemble au même endroit les articles de plein de sources (sites de presse, blogues, etc). On s'abonne à des sources et on les range par dossier. Mon application se connecte à un compte Inoreader qui m'a été fourni pour aller y chercher les articles, au lieu de visiter chaque site un par un.
 
-| Étape | Rôle | Approche envisagée |
-|-------|------|--------------------|
-| 1. Collecte | Récupérer les articles (titre, source, date, contenu) | API Inoreader |
-| 2. Embeddings et similarité | Filtrage rapide : écarter le manifestement hors-sujet | Modèle d'*embeddings* exécuté localement |
-| 3. Reranking | Reclasser finement les articles retenus selon la requête | *Cross-encoder* / *reranker* |
-| 4. Modèle de langue comme juge | Évaluer la pertinence (besoin, thématique, requête, titre, contenu) et produire un score avec justification | Modèle local via Ollama |
-| 5. Score et classement | Retourner le top N trié par pertinence | (sans objet) |
+Le tri par pertinence se fait entièrement avec des *embeddings* calculés en local, sans faire appel à un modèle de langue.
 
-```text
-Inoreader → Articles → Embeddings/similarité → Reranking → Modèle juge → Score → Top N pertinent
-```
-
-## Base documentaire (approche RAG)
-
-La base documentaire est un corpus curé par l'utilisateur. Les articles jugés pertinents et les PDF téléversés y sont ingérés (extraction du texte, puis découpage en *chunks*, puis *embeddings*, puis stockage dans une base vectorielle locale). Lors d'une analyse, les passages les plus pertinents sont récupérés et fournis au modèle de langue comme contexte : c'est le principe du *RAG* (*retrieval-augmented generation*).
+| Étape | Ce que ça fait | Outil |
+|-------|----------------|-------|
+| 1. Récupération | Aller chercher les articles (titre, extrait, source, date) | API Inoreader  |
+| 2. Embeddings | Transformer en vecteurs, en local, chaque article et chaque thématique | Xenova/multilingual-e5-small (ONNX, 384 dimensions), `@huggingface/transformers`, dans Node.js |
+| 3. Score | Mesurer à quel point l'article colle à la thématique (et à la requête) | Similarité cosinus |
+| 4. Filtrage et tri | Garder les articles au-dessus d'un seuil, puis trier par pertinence (un article peut toucher plusieurs thématiques) | Seuil fixé à 0,72 |
 
 ```text
-Articles retenus ─┐
-                  ├─► Ingestion (extraction → chunks → embeddings) ─► base vectorielle locale
-PDF téléversés ───┘
-                           Analyse / question ─► récupération (RAG) ─► modèle local (Ollama) ─► réponse ancrée
+Inoreader → Articles → Embeddings locaux → Similarité cosinus → Seuil + tri → Top N
 ```
+
+Quand l'utilisateur ajoute une recherche en langage naturel, le score mélange la proximité avec la thématique et la proximité avec cette recherche.
+
+## Côté technique
+
+- **Front-end** : React 19 et TypeScript, Vite, Tailwind CSS 3.
+- **Back-end** : Node.js 22 et Express 5, découpé en routes, services et mocks.
+- **Modèle d'embeddings** : tourne 100 % en local, chargé au démarrage du serveur.
+- **Modèle de langue** : GPT-4o mini (API OpenAI).
+- **Mode démo** : des données factices pour tester l'interface sans brancher les API.
 
 ## Contraintes et confidentialité
 
-!!! warning "Contexte gouvernemental : principe directeur"
-    Les documents de la base documentaire peuvent être internes au ministère. Par conséquent, le traitement par l'IA se fait localement : les modèles de langue sont exécutés sur place via Ollama, et la base vectorielle est locale. Aucune donnée interne n'est envoyée à un service externe.
+!!! warning "Ce qui sort et ce qui reste en local"
+    Il y a deux cas à ne pas mélanger :
 
-Points clés de l'approche :
+    - La veille (ce qu'on a aujourd'hui) : tout le tri se fait en local avec les *embeddings*. GPT-4o mini (OpenAI) ne voit que des articles de presse publics venus d'Inoreader. Comme ces articles sont déjà publics, les envoyer à OpenAI ne pose pas de souci de confidentialité.
+    - Les documents internes : pour l'instant, on ne les traite pas. La fonction pour résumer des documents déposés par l'utilisateur est en train d'être développée.
 
-- Modèles de langue locaux (Ollama) : les analyses s'exécutent sur l'infrastructure du ministère, sans dépendance à une API externe.
-- Séparation des données : Inoreader ne manipule que des contenus publics (articles, flux RSS) ; les documents internes restent dans l'environnement local.
-- Critères de décision : les choix techniques tiennent compte de la qualité, de la précision, de la latence, du coût, de la sécurité et de l'explicabilité, et pas seulement de la performance.
+Pour cette fonction de résumé de documents (à venir), l'utilisateur pourra choisir le modèle avec un petit sélecteur : soit un modèle local (par exemple avec Ollama), soit un modèle externe via une clé API. Comme ça, un document sensible peut être résumé entièrement en local, sans rien envoyer dehors.
 
-> À valider avec le superviseur : hébergement, politiques d'accès et niveau de sensibilité des documents admis dans la base.
+Deux autres choses :
 
-### Technologies envisagées
+- Pour Inoreader, je passe par OAuth 2.0 : aucun mot de passe n'est stocké.
+- Mes choix tiennent compte de la qualité, de la vitesse, du coût, de la sécurité et de la clarté, pas juste de la performance.
 
-> :bulb: À ce stade, il s'agit de pistes à expérimenter, non de choix définitifs ni d'un système déjà implémenté.
+### Technologies utilisées
 
-- Ollama : exécution locale des modèles de langue (modèles open-source précis à déterminer selon le matériel disponible).
-- Modèles d'*embeddings* et *reranker* : à sélectionner (priorité au support du français).
-- Base vectorielle locale (p. ex. ChromaDB) et orchestration (p. ex. LangChain) : à valider.
-- Inoreader : collecte des sources de veille.
-- Interface : maquettage exploré avec des outils comme Stitch et Figma.
+- Inoreader (pour récupérer les sources) et OAuth 2.0.
+- Xenova/multilingual-e5-small (embeddings) via @huggingface/transformers, en local.
+- GPT-4o mini (API OpenAI) pour le résumé et l'analyse des articles.
+- React, TypeScript, Vite, Tailwind, Node.js, Express.
 
-### Méthodologie
+### Comment je m'y prends
 
-- Démarche itérative, par preuves de concept (POC) : comprendre un besoin, prototyper, comparer des approches, évaluer la pertinence réelle.
-- Prototypage de l'interface avant développement.
-- Comparaison d'approches IA à chaque étape du pipeline, en gardant à l'esprit les critères ci-dessus.
+- J'avance par petites preuves de concept : comprendre un besoin, prototyper, puis évaluer.
+- Je maquette l'interface (dans Figma) avant de coder.
+- Je choisis mes outils en cherchant un bon équilibre entre souveraineté des données, coût et performance.
 
-### Validation et Évaluation
+### Validation et évaluation
 
-Pistes envisagées (non arrêtées) :
+Je n'ai pas encore d'évaluation chiffrée complète, mais j'ai commencé à vérifier les résultats à la main.
 
-- scénarios d'usage représentatifs (ex. une thématique de veille réelle) ;
-- retours du superviseur et d'utilisateurs internes ;
-- indicateurs sur la qualité du tri de pertinence (ex. comparaison du classement du système avec un jugement humain sur un échantillon).
+- Qualité des résumés : je relis les résumés générés pour juger s'ils sont fidèles et utiles, et je note ceux qui posent problème (infos manquantes, hors sujet, trop longs). Ça me sert à repérer ce qu'il faut améliorer.
+- Pertinence du tri (prévu) : étiqueter moi-même un petit ensemble d'articles (pertinent ou non), comparer avec ce que le système garde, et en tirer une précision. Ça permettra de vérifier le tri et de justifier ou d'ajuster le seuil de 0,72.
 
-> À réfléchir : comment mesurer la « pertinence » d'un article ou d'un document de façon crédible et reproductible ?
+À ça s'ajoutent les retours de mon superviseur.
+
+> Limites que je connais déjà : les flux RSS ne donnent souvent qu'un court extrait ; je n'ai testé qu'un seul modèle d'embeddings ; le tri n'a pas encore de précision chiffrée ; c'est un prototype, jamais mis en production.
 
 ## Échéancier
 
@@ -158,7 +146,7 @@ Pistes envisagées (non arrêtées) :
 
 | Activités                      | Début       | Fin         | Livrable                            | Statut       |
 |--------------------------------|-------------|-------------|-------------------------------------|--------------|
-| Ouverture de projet            | Sept. 2026  | Sept. 2026  | Proposition de projet (ce site)     | 🔄 En cours  |
-| Études préliminaires           | Sept. 2026  | *à préciser*| Document d'analyse                  | ⏳ À venir   |
-| Réalisation (POC)              | *à préciser*| *à préciser*| Prototype / POC                     | ⏳ À venir   |
+| Ouverture de projet            | Sept. 2026  | Sept. 2026  | Proposition de projet (ce site)     | ✅ Terminé   |
+| Réalisation (POC VeilleIA)     | Sept. 2026  | Oct. 2026   | Prototype veille + résumé           | 🔄 En cours  |
+| Évaluation                     | *à préciser*| *à préciser*| Validation de la pertinence         | ⏳ À venir   |
 | Présentation + Rapport         | Déc. 2026   | Déc. 2026   | Présentation + Rapport final        | ⏳ À venir   |
